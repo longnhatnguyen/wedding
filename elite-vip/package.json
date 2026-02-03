@@ -1,0 +1,14 @@
+{
+    "name": "biihappy-clone",
+    "version": "1.0.0",
+    "description": "Clone of Biihappy Template",
+    "main": "scrape_template.js",
+    "scripts": {
+        "start": "node scrape_template.js"
+    },
+    "dependencies": {
+        "axios": "1.4.0",
+        "cheerio": "1.0.0-rc.10",
+        "fs-extra": "^11.1.0"
+    }
+}

@@ -1,0 +1,88 @@
+@font-face {
+  font-family: 'Ephesis';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ephesis/v11/uU9PCBUS8IerL2VG7xM.ttf) format('truetype');
+}
+('truetype');
+}
+f) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NupjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NgpjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NgJjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NhpjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NipjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NkpjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NmpjMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NppgMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NspgMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NvpgMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Texturina';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/texturina/v32/c4mM1nxpEtL3pXiAulRTkY-HGmNEX1b9NhpgMwhAgliHhVrXy2eYG_Ug.ttf) format('truetype');
+}
