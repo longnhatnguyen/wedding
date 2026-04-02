@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Invitation Generator - Tạo Thiệp Cưới</title>
+  <meta name="description" content="Công cụ tạo thiệp cưới tự động - Upload phôi thiệp, nhập danh sách tên, xuất hàng loạt thiệp cưới">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>💍 Thiệp Cưới Generator</h1>
+    <p>Upload phôi thiệp · Nhập danh sách tên · Xuất thiệp hàng loạt</p>
+    <div class="divider"></div>
+  </header>
+
+  <main class="main-container">
+    <div class="layout">
+
+      <!-- LEFT PANEL: Upload + Name List -->
+      <div class="left-panel">
+        <!-- Upload Template -->
+        <div class="card" style="animation-delay: 0.1s">
+          <div class="card-title"><span class="icon">🖼️</span> Phôi Thiệp</div>
+          <div class="upload-area" id="uploadArea">
+            <input type="file" id="templateInput" accept="image/*" hidden>
+            <span class="upload-icon">📤</span>
+            <div class="upload-text">
+              <strong>Kéo thả</strong> hoặc <strong>click</strong> để upload<br>
+              ảnh phôi thiệp cưới trống
+            </div>
+          </div>
+        </div>
+
+        <!-- Name List -->
+        <div class="card mt-3" style="animation-delay: 0.2s">
+          <div class="card-title"><span class="icon">📋</span> Danh Sách Khách Mời</div>
+          <div class="name-input-group">
+            <textarea id="nameInput" placeholder="Nhập tên, mỗi dòng 1 tên&#10;Ví dụ:&#10;Nguyễn Văn A&#10;Trần Thị B&#10;Lê Văn C"></textarea>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button class="btn btn-gold btn-sm" style="flex:1" onclick="addNames()">➕ Thêm tên</button>
+            <button class="btn btn-outline btn-sm" onclick="clearAllNames()">🗑️ Xóa hết</button>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <input type="file" id="excelInput" accept=".xlsx,.xls,.csv" hidden>
+            <button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('excelInput').click()">
+              📊 Import từ Excel (cột A, từ dòng 2)
+            </button>
+          </div>
+          <div class="name-count">Tổng: <span id="nameCount">0</span> khách mời</div>
+          <div class="name-list" id="nameList"></div>
+        </div>
+      </div>
+
+      <!-- CENTER: Canvas Preview -->
+      <div class="center-panel">
+        <div class="card canvas-container" style="animation-delay: 0.15s">
+          <div class="card-title"><span class="icon">👁️</span> Xem Trước Thiệp</div>
+          <div class="canvas-wrapper" id="canvasWrapper">
+            <div class="canvas-placeholder" id="canvasPlaceholder">
+              <span class="icon">🎨</span>
+              <p>Upload phôi thiệp và thêm tên<br>để xem trước thiệp cưới</p>
+            </div>
+            <canvas id="previewCanvas" class="hidden"></canvas>
+          </div>
+          <div class="canvas-nav" id="canvasNav" style="display:none;">
+            <button class="btn btn-outline btn-sm" onclick="prevName()">◀</button>
+            <span class="current-name" id="currentNameDisplay">-</span>
+            <button class="btn btn-outline btn-sm" onclick="nextName()">▶</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Text Style + Export -->
+      <div class="right-panel">
+        <!-- Text Line Tabs -->
+        <div class="card" style="animation-delay: 0.2s">
+          <div class="card-title"><span class="icon">✏️</span> Tùy Chỉnh Chữ</div>
+
+          <!-- Duplicate name position toggle -->
+          <div class="checkbox-group">
+            <input type="checkbox" id="enableNamePos2" onchange="toggleNamePos2()">
+            <label for="enableNamePos2">📌 Chèn tên vào 2 vị trí trên thiệp</label>
+          </div>
+
+          <!-- Second line toggle -->
+          <div class="checkbox-group">
+            <input type="checkbox" id="enableLine2" onchange="toggleLine2()">
+            <label for="enableLine2">Thêm dòng chữ phụ (VD: tiêu đề, lời chúc)</label>
+          </div>
+
+          <!-- Text line tabs -->
+          <div class="text-line-tabs" id="textLineTabs">
+            <button class="text-line-tab active" data-line="1" onclick="switchTextLine(1)">Tên - Vị trí 1</button>
+            <button class="text-line-tab" data-line="1b" onclick="switchTextLine('1b')" style="display:none" id="tabNamePos2">Tên - Vị trí 2</button>
+            <button class="text-line-tab" data-line="2" onclick="switchTextLine(2)" style="display:none" id="tabLine2">Dòng phụ</button>
+          </div>
+
+          <!-- Line 2 custom text -->
+          <div class="style-group hidden" id="line2TextGroup">
+            <label class="style-label">Nội dung dòng 2</label>
+            <input type="text" id="line2Text" placeholder="VD: Trân trọng kính mời" oninput="renderPreview()">
+          </div>
+
+          <!-- Font -->
+          <div class="style-group">
+            <label class="style-label">Font chữ</label>
+            <select id="fontFamily" onchange="renderPreview()">
+              <option value="Dancing Script">Dancing Script</option>
+              <option value="Great Vibes">Great Vibes</option>
+              <option value="Alex Brush">Alex Brush</option>
+              <option value="Playfair Display">Playfair Display</option>
+              <option value="Inter">Inter</option>
+              <option value="Arial">Arial</option>
+              <option value="Times New Roman">Times New Roman</option>
+            </select>
+          </div>
+
+          <!-- Size + Weight -->
+          <div class="style-row">
+            <div class="style-group">
+              <label class="style-label">Cỡ chữ (px)</label>
+              <input type="number" id="fontSize" value="60" min="10" max="200" onchange="renderPreview()">
+            </div>
+            <div class="style-group">
+              <label class="style-label">Kiểu</label>
+              <div class="toggle-group">
+                <button class="toggle-btn active" id="toggleBold" onclick="toggleStyle('bold')"><b>B</b></button>
+                <button class="toggle-btn" id="toggleItalic" onclick="toggleStyle('italic')"><i>I</i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color -->
+          <div class="style-group">
+            <label class="style-label">Màu chữ</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="fontColor" value="#8B0000" onchange="syncColorHex(); renderPreview()">
+              <input type="text" id="fontColorHex" class="color-hex-input" value="#8B0000" oninput="syncColorPicker(); renderPreview()">
+            </div>
+          </div>
+
+          <!-- Text Align -->
+          <div class="style-group">
+            <label class="style-label">Căn lề</label>
+            <div class="toggle-group">
+              <button class="toggle-btn" id="alignLeft" onclick="setAlign('left')">⬅</button>
+              <button class="toggle-btn active" id="alignCenter" onclick="setAlign('center')">⬛</button>
+              <button class="toggle-btn" id="alignRight" onclick="setAlign('right')">➡</button>
+            </div>
+          </div>
+
+          <!-- Position -->
+          <div class="style-group">
+            <label class="style-label">Vị trí (% từ góc trên-trái)</label>
+            <div class="position-inputs">
+              <div>
+                <label class="style-label" style="font-size:0.7rem">X (%)</label>
+                <input type="number" id="posX" value="50" min="0" max="100" step="0.1" onchange="renderPreview()">
+              </div>
+              <div>
+                <label class="style-label" style="font-size:0.7rem">Y (%)</label>
+                <input type="number" id="posY" value="50" min="0" max="100" step="0.1" onchange="renderPreview()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="card mt-3" style="animation-delay: 0.3s">
+          <div class="card-title"><span class="icon">📦</span> Xuất Thiệp</div>
+          <div class="style-group">
+            <label class="style-label">Định dạng</label>
+            <select id="exportFormat">
+              <option value="png">PNG (chất lượng cao)</option>
+              <option value="jpeg">JPEG (nhẹ hơn)</option>
+            </select>
+          </div>
+          <button class="btn btn-rose btn-block" onclick="exportAll()" id="exportBtn">
+            📥 Tải xuống tất cả thiệp (ZIP)
+          </button>
+          <div class="export-progress hidden" id="exportProgress">
+            <div class="progress-bar">
+              <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Đang xử lý...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
