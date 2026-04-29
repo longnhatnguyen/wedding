@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Cụ Dịch Thuật AI Toàn Diện (Light Mode + Pronunciation)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #ec4899;
+            --secondary-hover: #db2777;
+            --success: #059669;
+            --success-hover: #047857;
+            --info: #0284c7;
+            --info-hover: #0369a1;
+            --warning: #ea580c;
+            --warning-hover: #c2410c;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-panel: #f1f5f9;
+            --text-main: #334155;
+            --text-title: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 1500px;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--border-light);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin: 0;
+            font-weight: 400;
+            font-size: 1.1rem;
+        }
+
+        /* ==== TABS SYSTEM ==== */
+        .tabs-header {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .tab-pane {
+            display: none;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 2.5rem;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-pane.active {
+            display: grid;
+        }
+
+        @media (max-width: 1024px) {
+            .tab-pane.active {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .config-panel {
+            background: var(--bg-panel);
+            padding: 1.25rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-light);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .config-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-title);
+            font-weight: 600;
+        }
+
+        .input-group select,
+        .input-group input {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-group select:focus,
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .content-box {
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            text-align: justify;
+            position: relative;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .paragraph-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            display: block;
+        }
+
+        .paragraph-box::before {
+            content: 'ĐỀ BÀI (Yêu cầu AI):';
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #15803d;
+            display: block;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #bbf7d0;
+            padding-bottom: 0.5rem;
+        }
+
+        .hint-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .feedback-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0c4a6e;
+        }
+
+        .reference-box {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+            color: #581c87;
+        }
+
+        .pronunciation-box {
+            background: #fdf2f8;
+            border: 1px solid #fbcfe8;
+            color: #831843;
+        }
+
+        textarea.user-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-main);
+            padding: 1.5rem;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            outline: none;
+            transition: all 0.2s;
+            resize: vertical;
+            min-height: 180px;
+            margin-bottom: 1.5rem;
+            box-sizing: border-box;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        textarea.user-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .actions,
+        .actions-interactive,
+        .actions-audio {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-interactive {
+            display: none;
+        }
+
+        .actions-audio {
+            border-top: 1px dashed #e9d5ff;
+            padding-top: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        button {
+            border: none;
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .btn-generate {
+            background: var(--primary);
+            width: 100%;
+        }
+
+        .btn-hint {
+            background: var(--warning);
+        }
+
+        .btn-grade {
+            background: var(--success);
+        }
+
+        .btn-reference {
+            background: var(--info);
+        }
+
+        .btn-speak {
+            background: #8b5cf6;
+        }
+
+        .btn-record {
+            background: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .btn-record.recording {
+            background: var(--danger);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .box-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.5px;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .alert-error {
+            background: #ef4444;
+        }
+
+        b {
+            color: #0f172a;
+        }
+
+        ul {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header-section">
+            <h1>Tiếng Anh AI Master</h1>
+            <p class="subtitle">Không gian Luyện Dịch, Luyện Đề & Hỗ Trợ Chấm Điểm 4.0</p>
+        </div>
+
+        <!-- GLOBAL CONFIG PANEL -->
+        <div class="config-panel" style="margin-bottom: 0;">
+            <div class="config-row-2">
+                <div class="input-group">
+                    <label for="apiKey">🔑 OpenAI API Key (Bắt buộc toàn hệ thống)</label>
+                    <input type="password" id="apiKey" placeholder="Nhập API Key OpenAI (Áp dụng chung luôn cho 2 Trạm)...">
+                </div>
+                <div class="input-group">
+                    <label for="aiModel">🤖 AI Model</label>
+                    <select id="aiModel">
+                        <option value="gpt-4o-mini" selected>GPT-4o Mini (Siêu rẻ & Nhanh)</option>
+                        <option value="gpt-4o">GPT-4o (Thông minh nhất)</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Cũ)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS HEADER -->
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab(event, 'tab1')">Trạm 1: Luyện Dịch & Phát Âm</button>
+            <button class="tab-btn" onclick="switchTab(event, 'tab2')">Trạm 2: Luyện Đề Tổng Hợp</button>
+        </div>
+
+        <!-- TAB 1: LUYỆN DỊCH & PHÁT ÂM -->
+        <div id="tab1" class="tab-pane active">
+            <!-- CỘT TRÁI -->
+            <div class="left-panel">
+                <div class="config-panel" style="margin-bottom: 1.5rem;">
+                    <div class="input-group">
+                        <label for="topic">📚 Chủ đề bài dịch</label>
+                        <select id="topic">
+                            <option value="Ngẫu nhiên tổng hợp">Ngẫu nhiên tổng hợp</option>
+                            <option value="Kinh tế, Lạm phát & Tài chính">Kinh tế & Tài chính</option>
+                            <option value="Công nghệ AI & Tương lai">Công nghệ & AI</option>
+                            <option value="Tâm lý học hành vi">Tâm lý học</option>
+                            <option value="Môi trường & Biến đổi khí hậu">Môi trường & Khí hậu</option>
+                        </select>
+                    </div>
+                    <div class="config-row-2">
+                        <div class="input-group">
+                            <label for="level">🎓 Cấp độ (Level)</label>
+                            <select id="level">
+                                <option value="Cơ bản (IELTS 4.0-5.0)">Cơ bản</option>
+                                <option value="Trung bình (IELTS 6.0-6.5)">Trung bình</option>
+                                <option value="Khó (IELTS 7.0-7.5)" selected>Khó</option>
+                                <option value="Trình độ Master (IELTS 8.0+)">Siêu khó</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="length">📏 Độ dài</label>
+                            <select id="length">
+                                <option value="ngắn gọn (60 từ)">Ngắn</option>
+                                <option value="trung bình (150 từ)" selected>Trung bình</option>
+                                <option value="siêu dài (250 từ)">Dài chi tiết</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-generate" id="btnGen" onclick="generateParagraph()">🔄 Lấy Đề Dịch Băn Bản (Việt
+                        -> Anh)</button>
+                </div>
+
+                <div class="loading-spinner" id="spinnerLeft"></div>
+
+                <div class="content-box paragraph-box" id="contentBox" style="display: block;">
+                    Cấu hình API Key và các thông tin phía trên, sau đó ấn nút "Lấy Đề Dịch Văn Bản" ngay trên này nhé.
+                </div>
+
+                <div class="content-box hint-box" id="hintBox">
+                    <div class="box-title">💡 Gợi Ý Từ Vựng & Cấu Trúc Tuyệt Đỉnh:</div>
+                    <div id="hintContent"></div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI -->
+            <div class="right-panel">
+                <textarea class="user-input" id="userInput"
+                    placeholder="1. Nhập bản dịch Tiếng Anh của bạn vào đây.&#10;2. Bấm Nút Chấm Điểm bên dưới để Sửa Ngữ Pháp.&#10;3. Xem Đáp Án Tham Khảo để chuẩn bị cho phần Thu m (Pronunciation)."></textarea>
+
+                <div class="loading-spinner" id="spinnerRight"></div>
+
+                <div class="actions-interactive" id="interactiveActions">
+                    <button class="btn-hint" id="btnHint" onclick="getHints()">💡 Xin Gợi Ý (Dịch)</button>
+                    <button class="btn-grade" id="btnGrade" onclick="gradeTranslation()">💯 Chấm Điểm Viết</button>
+                    <button class="btn-reference" id="btnReference" onclick="getReferenceTranslation()">📖 Dịch Mẫu Mở
+                        Khóa Thu Âm</button>
+                </div>
+
+                <div class="content-box feedback-box" id="feedbackBox">
+                    <div class="box-title">💯 Báo cáo Chấm Ngữ Pháp & Từ vựng từ Giám Khảo AI:</div>
+                    <div id="feedbackContent"></div>
+                </div>
+
+                <div class="content-box reference-box" id="referenceBox">
+                    <div class="box-title">📖 Bản Dịch Tham Khảo Chuẩn (Dùng Để Thu Âm Tiếng Anh):</div>
+                    <div id="referenceContent" style="font-weight: 500; font-size: 1.25rem;"></div>
+
+                    <div class="actions-audio">
+                        <button class="btn-speak" id="btnSpeak" onclick="playReferenceAudio()">🔊 Loa: Máy Nghe Đọc
+                            Mẫu</button>
+                        <button class="btn-record" id="btnRecord" onclick="toggleRecording()">🎙 Micro: Ghi Âm Luyện
+                            Phát Âm Ngay</button>
+                    </div>
+                </div>
+
+                <div class="content-box pronunciation-box" id="pronunciationBox">
+                    <div class="box-title">🎯 Đánh Giá & Chấm Lỗi Phát Âm (Phân tích Giọng Nói):</div>
+                    <div id="pronunciationContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: LUYỆN ĐỀ TỔNG HỢP -->
+        <div id="tab2" class="tab-pane">
+            <div class="left-panel">
+                <!-- Configuration specific to Practice Test -->
+                <div class="config-panel" style="margin-bottom: 1.5rem;">
+                    <div class="input-group" style="margin-bottom: 1rem;">
+                        <label for="practiceTopic">📚 Chủ đề ôn luyện</label>
+                        <select id="practiceTopic">
+                            <option value="Ngữ pháp tổng hợp cơ bản">Ngữ pháp tổng hợp cơ bản</option>
+                            <option value="Từ vựng IELTS học thuật">Từ vựng IELTS học thuật</option>
+                            <option value="Tiếng Anh kinh doanh thương mại">Tiếng Anh thương mại</option>
+                            <option value="Công nghệ thông tin">Công nghệ thông tin</option>
+                            <option value="Giao tiếp đời sống">Giao tiếp thường ngày</option>
+                        </select>
+                    </div>
+                    <div class="config-row-2">
+                        <div class="input-group">
+                            <label for="practiceLevel">🎓 Cấp độ đề</label>
+                            <select id="practiceLevel">
+                                <option value="Cơ bản (Cấp 2, 3)">Cơ bản</option>
+                                <option value="Trung bình khá">Trung bình khá</option>
+                                <option value="Nâng cao (IELTS 7.0+)" selected>Nâng cao</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="practiceType">📝 Thể loại bài tập</label>
+                            <select id="practiceType">
+                                <option value="multiple_choice">Trắc nghiệm (A, B, C, D)</option>
+                                <option value="fill_blank">Điền từ đục lỗ</option>
+                                <option value="rewrite">Viết lại câu</option>
+                                <option value="translate_sentence">Dịch từng câu</option>
+                                <option value="find_error">Tìm và Sửa lỗi sai ngữ pháp</option>
+                                <option value="reading_comprehension">Đọc hiểu văn bản (Reading)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <label for="practiceCount">🔢 Số câu hỏi (Nhập số câu tuỳ ý)</label>
+                        <input type="number" id="practiceCount" min="1" max="100" value="10" style="padding: 0.75rem;">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-generate" onclick="generatePracticeTest()">🔄 Tạo Luyện Đề Mới</button>
+                </div>
+
+                <div class="loading-spinner" id="spinnerLeftPractice"></div>
+
+                <div class="content-box paragraph-box" id="practiceContentBox" style="display: block;">
+                    Chọn loại bài tập bạn muốn làm ở trên (Trắc nghiệm, Điền từ...), hệ thống AI sẽ dựa vào Chủ Đề và
+                    Cấp Độ ở bảng Config chung trên cùng để xuất đề tài!
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="loading-spinner" id="spinnerRightPractice"></div>
+
+                <div class="actions-interactive" id="practiceInteractiveActions" style="display:none; gap:0.75rem;">
+                    <button class="btn-grade" onclick="gradePracticeTest()">💯 Chấm Điểm Bài Này</button>
+                    <button class="btn-reference" onclick="getPracticeReference()">📖 Xem Full Key Đáp Án</button>
+                </div>
+
+                <div class="content-box feedback-box" id="practiceFeedbackBox">
+                    <div class="box-title">💯 Báo cáo Chấm Điểm & Phân Tích:</div>
+                    <div id="practiceFeedbackContent"></div>
+                </div>
+
+                <div class="content-box reference-box" id="practiceReferenceBox">
+                    <div class="box-title">📖 Đáp Án Chuẩn & Giải Thích Chi Tiết:</div>
+                    <div id="practiceReferenceContent"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="alert-toast" id="toast">Thông báo!</div>
+
+    <script>
+        // CORE VARIABLES
+        let currentText = "";
+        let currentReference = "";
+
+        let currentPracticeText = "";
+        let currentPracticeReference = "";
+        let currentPracticeType = "";
+
+        // SPEECH VARIABLES
+        let isRecording = false;
+        let recognition = null;
+        let synth = window.speechSynthesis;
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            if (isError) toast.classList.add('alert-error');
+            else toast.classList.remove('alert-error');
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        }
+
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            evt.currentTarget.classList.add('active');
+
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Helper to query OpenAI API
+        async function fetchGemini(prompt) {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const aiModel = document.getElementById('aiModel').value;
+            if (!apiKey) {
+                throw new Error("Bạn chưa nhập API Key! Hãy điền API Key OpenAI vào ô thiết lập bên trên.");
+            }
+
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    model: aiModel,
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+
+            if (!response.ok) throw new Error("Lỗi API! Vui lòng kiểm tra lại Key hoặc kết nối mạng.");
+            const data = await response.json();
+            if (data.choices && data.choices.length > 0) {
+                return data.choices[0].message.content.trim();
+            } else {
+                throw new Error("AI không trả về kết quả.");
+            }
+        }
+
+        function setSpinner(id, isVisible) {
+            document.getElementById(id).style.display = isVisible ? 'block' : 'none';
+        }
+
+        // ==========================================
+        // TAB 1: LUYỆN DỊCH & PHÁT ÂM LOGIC
+        // ==========================================
+        async function generateParagraph() {
+            const topic = document.getElementById('topic').value;
+            const level = document.getElementById('level').value;
+            const length = document.getElementById('length').value;
+
+            setSpinner('spinnerLeft', true);
+            const btns = document.querySelectorAll('#tab1 button:not(#btnRecord):not(#btnSpeak)');
+            btns.forEach(b => b.disabled = true);
+
+            document.getElementById('userInput').style.display = 'none';
+            document.getElementById('interactiveActions').style.display = 'none';
+            document.getElementById('hintBox').style.display = 'none';
+            document.getElementById('feedbackBox').style.display = 'none';
+            document.getElementById('referenceBox').style.display = 'none';
+            document.getElementById('pronunciationBox').style.display = 'none';
+
+            document.getElementById('userInput').value = '';
+            currentReference = "";
+
+            const promptText = "Bạn là chuyên gia ra đề. Viết 1 đoạn văn tiếng Việt dài: " + length + ", mức độ phức tạp từ vựng tương đương: " + level + " để học sinh chuẩn bị dịch sang tiếng Anh. Xoay quanh chủ đề: '" + topic + "'. YÊU CẦU: Trả về trực tiếp nội dung đoạn văn, KHÔNG in tiêu đề, KHÔNG kèm giải thích phân tích.";
+
+            try {
+                currentText = await fetchGemini(promptText);
+                document.getElementById('contentBox').textContent = currentText;
+
+                document.getElementById('userInput').style.display = 'block';
+                document.getElementById('interactiveActions').style.display = 'flex';
+                showToast("Đã lấy được đề thi Viết bài mới!");
+            } catch (error) {
+                showToast(error.message, true);
+            } finally {
+                setSpinner('spinnerLeft', false);
+                btns.forEach(b => b.disabled = false);
+            }
+        }
+
+        async function getHints() {
+            if (!currentText) return;
+            setSpinner('spinnerRight', true);
+            document.getElementById('btnHint').disabled = true;
+            const level = document.getElementById('level').value;
+            const promptText = "Đoạn văn tiếng Việt: '" + currentText + "'. \n Nhiệm vụ: Trích 5 cụm từ khóa (Collocations/Idioms đỉnh cao) phù hợp nhất ngữ cảnh để chuyển ngữ. Trình độ " + level + ". \n Trả lời bằng DẠNG HTML (dùng <b>, <ul>, <li>). Không dùng Markdown.";
+            try {
+                let hintsRaw = await fetchGemini(promptText);
+                document.getElementById('hintContent').innerHTML = hintsRaw.replace(/```html/g, '').replace(/```/g, '');
+                document.getElementById('hintBox').style.display = 'block';
+            } catch (error) { showToast(error.message, true); }
+            finally { setSpinner('spinnerRight', false); document.getElementById('btnHint').disabled = false; }
+        }
+
+        async function gradeTranslation() {
+            const userTranslate = document.getElementById('userInput').value.trim();
+            if (!userTranslate) { showToast("Hãy gõ dịch tiếng Anh trước khi chấm điểm!", true); return; }
+            setSpinner('spinnerRight', true);
+            document.getElementById('btnGrade').disabled = true;
+
+            const promptText = "Bạn là Giám khảo chấm thi Writing. Đoạn gốc: '" + currentText + "'. Bài học sinh: '" + userTranslate + "'. Hãy trả về kết quả DÙNG MÃ HTML (<br>, <b>, <ul>, <li>, chữ màu đỏ là <span style='color:red'>) với cấu trúc: \n1. Điểm Band Ước Lượng (VD: Tương đương IELTS x.x) <br>\n2. Nhận Xét Ngữ Pháp & Mạch Lạc.<br>\n3. Các Lỗi Sai Cụ Thể (Từ sai -> Sửa thành).<br>\n<br><b>📚 TỪ MỚI CẦN HỌC (Vocabulary to learn):</b><br>Liệt kê 3 từ vựng / cụm thành ngữ cao cấp nhất cho bài này. KHÔNG CHỨA ```html.";
+
+            try {
+                let feedbackRaw = await fetchGemini(promptText);
+                document.getElementById('feedbackContent').innerHTML = feedbackRaw.replace(/```html/g, '').replace(/```/g, '');
+                document.getElementById('feedbackBox').style.display = 'block';
+            } catch (error) { showToast(error.message, true); }
+            finally { setSpinner('spinnerRight', false); document.getElementById('btnGrade').disabled = false; }
+        }
+
+        async function getReferenceTranslation() {
+            if (currentReference) { document.getElementById('referenceBox').style.display = 'block'; return; }
+            setSpinner('spinnerRight', true);
+            document.getElementById('btnReference').disabled = true;
+            const promptText = "Dịch sát nghĩa và cực kỳ học thuật đoạn tiếng Việt sau sang tiếng Anh. Đoạn văn: '" + currentText + "'. YÊU CẦU: Chỉ trả về đoạn văn tiếng Anh, không thêm phân tích. TUYỆT ĐỐI không dùng ký tự đặc biệt lằng nhằng.";
+
+            try {
+                currentReference = await fetchGemini(promptText);
+                document.getElementById('referenceContent').textContent = currentReference;
+                document.getElementById('referenceBox').style.display = 'block';
+            } catch (error) { showToast(error.message, true); }
+            finally { setSpinner('spinnerRight', false); document.getElementById('btnReference').disabled = false; }
+        }
+
+        function playReferenceAudio() {
+            if (!currentReference) return;
+            if (!synth) { showToast("Trình duyệt không hỗ trợ đọc Text-to-Speech", true); return; }
+
+            const btnSpeak = document.getElementById('btnSpeak');
+            if (synth.speaking) {
+                synth.cancel();
+                btnSpeak.innerHTML = '🔊 Loa: Máy Nghe Đọc Mẫu';
+                return;
+            }
+
+            const utterThis = new SpeechSynthesisUtterance(currentReference);
+            utterThis.lang = 'en-US';
+            utterThis.rate = 0.9;
+
+            utterThis.onstart = () => { btnSpeak.innerHTML = '⏸ Đang Đọc... (Bấm Dừng)'; };
+            utterThis.onend = () => { btnSpeak.innerHTML = '🔊 Loa: Máy Nghe Đọc Mẫu'; };
+            utterThis.onerror = () => { btnSpeak.innerHTML = '🔊 Loa: Máy Nghe Đọc Mẫu'; };
+
+            synth.speak(utterThis);
+        }
+
+        function toggleRecording() {
+            const btnRecord = document.getElementById('btnRecord');
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showToast("🔴 Trình duyệt không hỗ trợ SpeechRecognition. Hãy dùng Google Chrome hoặc Edge nhé!", true);
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (isRecording) {
+                if (recognition) recognition.stop();
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isRecording = true;
+                btnRecord.classList.add('recording');
+                btnRecord.innerHTML = '🛑 Đang Mở Micro... Đọc Ngay Nào! (Bấm để Ngừng)';
+                showToast("🎙 Đã mở Micro. Đọc thật to bạn nhé!");
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                showToast("🤖 Đã nghe xong, đang vắt óc chấm điểm phát âm...");
+                btnRecord.classList.remove('recording');
+                btnRecord.innerHTML = '⏳ Trông Chờ AI Chấm Điểm...';
+                isRecording = false;
+
+                gradePronunciationVoice(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                showToast("Lỗi Micro: " + event.error, true);
+                isRecording = false;
+                btnRecord.classList.remove('recording');
+                btnRecord.innerHTML = '🎙 Micro: Ghi Âm Luyện Phát Âm Ngay';
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                if (btnRecord.innerHTML !== '⏳ Trông Chờ AI Chấm Điểm...') {
+                    btnRecord.classList.remove('recording');
+                    btnRecord.innerHTML = '🎙 Micro: Ghi Âm Luyện Phát Âm Ngay';
+                }
+            };
+
+            try { recognition.start(); } catch (e) { showToast("Trình duyệt chặn mở Micro. Hãy bấm Cho phép trên thanh địa chỉ.", true); }
+        }
+
+        async function gradePronunciationVoice(transcriptText) {
+            setSpinner('spinnerRight', true);
+            const btnRecord = document.getElementById('btnRecord');
+
+            const promptText = "Bạn là cô giáo bản xứ (Native Speaker). Dưới đây là BĂNG GHI ÂM (Transcript mà máy tính đã nghe được).\n" +
+                "=== VĂN BẢN CHUẨN CẦN PHẢI ĐỌC (Expected) ===\n" + currentReference + "\n" +
+                "=== VĂN BẢN MÁY NGHE ĐƯỢC CỦA HỌC SINH (Heard) ===\n" + transcriptText + "\n" +
+                "Nhiệm vụ: Trả về kết quả đánh giá bằng tiếng Việt và HTML (<b>, <ul>, <li>).\n" +
+                "1. <b>Trạng Thái Nghe:</b> In ra lại cái câu [VĂN BẢN MÁY TÍNH THỰC TẾ NGHE ĐƯỢC].\n" +
+                "2. <b>Đánh giá Sắc Thái:</b> % chuẩn xác.\n" +
+                "3. <b>Các từ sai/nuốt âm (Mispronunciations):</b> Dẫn chứng 'Chữ gốc', IPA quốc tế và hướng dẫn sửa miệng.";
+
+            try {
+                let feedbackRaw = await fetchGemini(promptText);
+                document.getElementById('pronunciationContent').innerHTML = feedbackRaw.replace(/```html/g, '').replace(/```/g, '');
+                document.getElementById('pronunciationBox').style.display = 'block';
+                document.getElementById('pronunciationBox').scrollIntoView({ behavior: 'smooth', block: 'end' });
+                showToast("🎯 Đã phân tích xong khẩu hình phát âm của bạn.");
+            } catch (error) {
+                showToast(error.message, true);
+            } finally {
+                setSpinner('spinnerRight', false);
+                btnRecord.classList.remove('recording');
+                btnRecord.innerHTML = '🎙 Micro: Thử Lại Lần Nữa Cho Chuẩn';
+            }
+        }
+
+        // ==========================================
+        // TAB 2: LUYỆN ĐỀ TỔNG HỢP LOGIC
+        // ==========================================
+        async function generatePracticeTest() {
+            const topic = document.getElementById('practiceTopic').value;
+            const level = document.getElementById('practiceLevel').value;
+            const type = document.getElementById('practiceType').value;
+            const count = document.getElementById('practiceCount').value;
+
+            setSpinner('spinnerLeftPractice', true);
+
+            document.getElementById('practiceInteractiveActions').style.display = 'none';
+            document.getElementById('practiceFeedbackBox').style.display = 'none';
+            document.getElementById('practiceReferenceBox').style.display = 'none';
+
+            currentPracticeReference = "";
+            currentPracticeType = type;
+
+            let instruction = "";
+            if (type === 'multiple_choice') {
+                instruction = "Tạo " + count + " câu hỏi trắc nghiệm tiếng Anh (A, B, C, D) xoay quanh chủ đề. YÊU CẦU BẮT BUỘC: Trả về BẰNG MÃ HTML. Mỗi câu hỏi bọc trong <div style='margin-bottom:15px'>. Bốn đáp án phải dùng thẻ <input type='radio' name='q1' value='A'> bọc trong <label style='display:block; margin: 5px 0; cursor:pointer;'>. (Vị trí 'name' thay đổi theo số thứ tự câu, ví dụ q1, q2). Không in đáp án đúng.";
+            } else if (type === 'fill_blank') {
+                instruction = "Tạo một đoạn văn tiếng Anh, đục lỗ " + count + " chỗ trống. YÊU CẦU BẮT BUỘC: Trả về BẰNG MÃ HTML. Tại mỗi chỗ đục lỗ, chèn chính xác thẻ HTML: <input type='text' class='blank-input' id='q1' style='margin: 0 5px; padding: 4px 8px; border-radius: 6px; border: 1px solid #94a3b8; outline: none;' placeholder='Điền từ...'> (id tăng dần q1, q2...). Cần phù hợp chuẩn " + level + ".";
+            } else if (type === 'rewrite') {
+                instruction = "Tạo " + count + " câu bài tập viết lại câu hoàn chỉnh bằng tiếng Anh. YÊU CẦU BẮT BUỘC: Trả về BẰNG MÃ HTML. Bạn cung cấp 1 câu gốc và 1 từ gợi ý, sau đó chèn 1 thẻ <input type='text' class='rewrite-input' id='q1' style='width: 100%; padding: 10px; margin: 8px 0 20px 0; border-radius: 8px; border: 1px solid #94a3b8;' placeholder='Viết lại câu vào đây...'> (id tăng dần q1, q2...). Cần phù hợp chuẩn " + level + ".";
+            } else if (type === 'translate_sentence') {
+                instruction = "Cung cấp " + count + " câu tiếng Việt độc lập, liên quan đến chủ đề. YÊU CẦU BẮT BUỘC: Trả về BẰNG MÃ HTML. Dưới mỗi câu tiếng Việt, chèn 1 thẻ <input type='text' class='translate-input' id='q1' style='width: 100%; padding: 10px; margin: 8px 0 20px 0; border-radius: 8px; border: 1px solid #94a3b8;' placeholder='Dịch câu này sang tiếng Anh...'> (id tăng dần q1, q2...). Tương đương " + level + ".";
+            } else if (type === 'find_error') {
+                instruction = "Tạo " + count + " câu tiếng Anh độc lập. Mỗi câu PHẢI CÓ CHÍNH XÁC 1 LỖI SAI (ngữ pháp/từ vựng). YÊU CẦU BẮT BUỘC: Trả về BẰNG MÃ HTML. Dưới mỗi câu bị làm sai, chèn 1 thẻ <input type='text' class='finderror-input' id='q1' style='width: 100%; padding: 10px; margin: 8px 0 20px 0; border-radius: 8px; border: 1px solid #94a3b8;' placeholder='Gõ từ bị sai và sửa lại (VD: is -> are)...'> (id tăng dần q1, q2...). KHÔNG IN ĐÁP ÁN TRONG ĐỀ.";
+            } else if (type === 'reading_comprehension') {
+                instruction = "Viết 1 đoạn văn tiếng Anh reading ngắn. Dưới đoạn văn, tạo " + count + " câu hỏi trắc nghiệm Đọc Hiểu liên quan bài đọc. YÊU CẦU BẮT BUỘC: Trả về BẰNG MÃ HTML. Mỗi câu hỏi đọc hiểu phải có 4 đáp án dạng <input type='radio' name='q1' value='A'> bọc trong thẻ <label style='display:block;'> (giống trắc nghiệm thông thường). Thay đổi 'name' q1, q2. KHÔNG in đáp án.";
+            }
+
+            const promptText = "Bạn là cô giáo tạo đề. Yêu cầu: " + instruction + " Chủ đề: '" + topic + "'. Cấp độ khó: " + level + ". CHÚ Ý QUAN TRỌNG: BẠN PHẢI TRẢ VỀ DƯỚI DẠNG MÃ HTML THUẦN TÚY CÓ CHỨA CÁC THẺ INPUT (Dùng <b>, <p>, <br>, <input>, <label>), TUYỆT ĐỐI KHÔNG bọc mã trong markdown ```html.";
+
+            try {
+                let responseText = await fetchGemini(promptText);
+                responseText = responseText.replace(/```html/g, '').replace(/```/g, ''); // Safety strip
+
+                currentPracticeText = responseText;
+                document.getElementById('practiceContentBox').innerHTML = responseText;
+
+                document.getElementById('practiceInteractiveActions').style.display = 'flex';
+                showToast("Đã lấy được đề thi tương tác mới tinh!");
+            } catch (error) {
+                showToast(error.message, true);
+            } finally {
+                setSpinner('spinnerLeftPractice', false);
+            }
+        }
+
+        async function gradePracticeTest() {
+            let userInput = "";
+
+            const radios = document.querySelectorAll('#practiceContentBox input[type="radio"]:checked');
+            radios.forEach(r => userInput += "Câu " + r.name + " Chọn: " + r.value + "\n");
+
+            const blanks = document.querySelectorAll('#practiceContentBox input.blank-input');
+            blanks.forEach(b => userInput += "Chỗ trống " + b.id + " Điền: " + b.value + "\n");
+
+            const rewrites = document.querySelectorAll('#practiceContentBox input.rewrite-input');
+            rewrites.forEach(b => userInput += "Câu " + b.id + " Viết lại là: " + b.value + "\n");
+
+            const translates = document.querySelectorAll('#practiceContentBox input.translate-input');
+            translates.forEach(b => userInput += "Câu " + b.id + " Dịch là: " + b.value + "\n");
+
+            const finderrors = document.querySelectorAll('#practiceContentBox input.finderror-input');
+            finderrors.forEach(b => userInput += "Câu lỗi " + b.id + " Phát hiện & Sửa là: " + b.value + "\n");
+
+            userInput = userInput.trim();
+            if (!userInput) { showToast("Vui lòng tick chọn hoặc điền đáp án trực tiếp vào đề bài trước khi bấm chấm điểm!", true); return; }
+
+            setSpinner('spinnerRightPractice', true);
+            const promptText = "Bạn là Giám khảo giáo viên Tiếng Anh. Đây là Đề Bài bạn đã ra: \n" + currentPracticeText + "\n\n" +
+                "Đây là toàn bộ Đáp Án do Học sinh tương tác điền trên máy: \n" + userInput + "\n\n" +
+                "Loại bài tập: " + currentPracticeType + ".\n" +
+                "Yêu cầu: Chấm điểm bài giải này. In ra HTML <b>, <ul>, đán án đúng bôi Xanh, sai bôi Đỏ (KHÔNG chứa markdown html). Chỉ ra rõ câu nộp tương ứng chữ nào ĐÚNG, chữ nào SAI so với chuẩn. Giải thích rõ quy tắc.";
+
+            try {
+                let feedbackRaw = await fetchGemini(promptText);
+                document.getElementById('practiceFeedbackContent').innerHTML = feedbackRaw.replace(/```html/g, '').replace(/```/g, '');
+                document.getElementById('practiceFeedbackBox').style.display = 'block';
+                document.getElementById('practiceFeedbackBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (error) { showToast(error.message, true); }
+            finally { setSpinner('spinnerRightPractice', false); }
+        }
+
+        async function getPracticeReference() {
+            if (currentPracticeReference) { document.getElementById('practiceReferenceBox').style.display = 'block'; return; }
+            setSpinner('spinnerRightPractice', true);
+
+            const promptText = "Bạn là giáo viên. Hãy cung cấp ĐÁP ÁN CHUẨN KÈM GIẢI THÍCH CHI TIẾT cho Đề Bài sau: \n" + currentPracticeText + "\n\n" +
+                "Trả về dạng mã HTML (Dùng <b>, <ul>, <br>, KHÔNG chứa ```html). Giải thích ngắn gọn tại sao lại điền/chọn đáp án đó để học sinh tự ôn.";
+
+            try {
+                let refRaw = await fetchGemini(promptText);
+                currentPracticeReference = refRaw.replace(/```html/g, '').replace(/```/g, '');
+                document.getElementById('practiceReferenceContent').innerHTML = currentPracticeReference;
+                document.getElementById('practiceReferenceBox').style.display = 'block';
+                document.getElementById('practiceReferenceBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (error) { showToast(error.message, true); }
+            finally { setSpinner('spinnerRightPractice', false); }
+        }
+    </script>
+</body>
+
+</html>
